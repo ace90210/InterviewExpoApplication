@@ -1,0 +1,91 @@
+﻿@using System.Timers;
+@using System.Linq.Expressions;
+@using Microsoft.AspNetCore.Components;
+@using Microsoft.AspNetCore.Components.Forms;
+
+@inject HttpClient HttpClient
+
+@inherits InputBase<string>
+
+<div class="autocomplete">
+    <input type="text" value="@CurrentValue" @oninput="InputChanged" @onblur="HideSuggestions" @onfocus="ShowSuggestions" @attributes="AdditionalAttributes" />
+    @if (showSuggestions && (suggestions?.Any() ?? false))
+    {
+        <div class="autocomplete-items">
+            @foreach (var suggestion in suggestions)
+            {
+                <div @onmousedown="() => SuggestionSelected(suggestion)">
+                    @suggestion
+                </div>
+            }
+        </div>
+    }
+</div>
+
+<ValidationMessage For="@(() => CurrentValue)"></ValidationMessage>
+
+@code {
+    private Timer _debounceTimer;
+    bool showSuggestions;
+    List<string> suggestions = new List<string>();
+
+    protected override bool TryParseValueFromString(string value, out string result, out string validationErrorMessage)
+    {
+        result = value;
+        validationErrorMessage = null;
+        return true;
+    }
+
+    private async Task InputChanged(ChangeEventArgs args)
+    {
+        var input = args.Value as string;
+        CurrentValue = input;
+
+        if (!string.IsNullOrWhiteSpace(input))
+        {
+            if (_debounceTimer == null)
+            {
+                _debounceTimer = new Timer(500);
+                _debounceTimer.Elapsed += async (sender, e) =>
+                {
+                    suggestions = await GetSuggestionsList(input);
+                    _debounceTimer.Stop();
+                    await InvokeAsync(StateHasChanged);
+                };
+                _debounceTimer.Start();
+            }
+            else
+            {
+                _debounceTimer.Stop();
+                _debounceTimer.Start();
+            }
+        }
+
+        await ValueChanged.InvokeAsync(input);
+    }
+
+    private async Task<List<string>> GetSuggestionsList(string input)
+    {
+        var response = await HttpClient.GetFromJsonAsync<CompanyLookupResult[]>($"https://autocomplete.clearbit.com/v1/companies/suggest?query={CurrentValue}");
+
+        return response.Select(r => r.Name).ToList();
+    }
+
+    private async Task SuggestionSelected(string suggestion)
+    {
+        CurrentValue = suggestion;
+        suggestions.Clear();
+        await ValueChanged.InvokeAsync(suggestion);
+        HideSuggestions();
+    }
+
+    private void HideSuggestions()
+    {
+        showSuggestions = false;
+    }
+
+    private void ShowSuggestions()
+    {
+        showSuggestions = true;
+    }
+}
