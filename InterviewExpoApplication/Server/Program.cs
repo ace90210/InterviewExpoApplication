@@ -1,6 +1,12 @@
+using InterviewExpoApplication.Data.Contexts;
+using InterviewExpoApplication.Data.Repositories;
+using InterviewExpoApplication.Shared.Configuration;
 using InterviewExpoApplication.Shared.JsonConverters;
+using Microsoft.EntityFrameworkCore;
+using InterviewExpoApplication.Data.Extensions;
+using InterviewExpoApplication.Server.Services;
 
-namespace InterviewExpoApplication
+namespace InterviewExpoApplication.Server
 {
     public class Program
     {
@@ -14,10 +20,20 @@ namespace InterviewExpoApplication
             .AddJsonOptions(options =>
             {
                 options.JsonSerializerOptions.Converters.Add(new DateOnlyJsonConverter());
-            }); 
+            });
 
 
             builder.Services.AddRazorPages();
+
+            builder.Services.Configure<DatabaseConfiguration>(builder.Configuration.GetSection("DatabaseConfiguration"));
+            builder.Services.Configure<ApplicationConfiguration>(builder.Configuration.GetSection("ApplicationConfiguration"));
+            builder.Services.AddScoped<IRegistrationService, RegistrationService>();
+            builder.Services.AddHttpClient();
+
+            var databaseConfiguration =
+                builder.Configuration.GetSection("DatabaseConfiguration").Get<DatabaseConfiguration>();
+
+            builder.Services.RegisterDatabaseProvider(databaseConfiguration);
 
             var app = builder.Build();
 

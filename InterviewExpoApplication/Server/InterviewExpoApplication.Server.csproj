@@ -7,12 +7,24 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="6.0.13" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="6.0.15" />
+	  
+	<PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="6.0.15">
+		<PrivateAssets>all</PrivateAssets>
+		<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+	</PackageReference>
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Client\InterviewExpoApplication.Client.csproj" />
+    <ProjectReference Include="..\Data\InterviewExpoApplication.Data.Sqlite\InterviewExpoApplication.Data.Sqlite.csproj" />
+    <ProjectReference Include="..\Data\InterviewExpoApplication.Data.SqlServer\InterviewExpoApplication.Data.SqlServer.csproj" />
+    <ProjectReference Include="..\Data\InterviewExpoApplication.Data\InterviewExpoApplication.Data.csproj" />
     <ProjectReference Include="..\Shared\InterviewExpoApplication.Shared.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Models\" />
   </ItemGroup>
 
 

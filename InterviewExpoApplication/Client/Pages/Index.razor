@@ -1,4 +1,5 @@
 ﻿@page "/"
+@using System.Net;
 
 @inject ILogger<Index> Logger
 @inject RegistrationService RegistrationService
@@ -8,51 +9,56 @@
 
 <h1>Expo Attendee Application </h1>
     
-<EditForm Model="@eventRegistration" OnSubmit="@HandleSubmit">
-    <DataAnnotationsValidator />
+@if (available)
+{
+    <EditForm Model="@eventRegistration" OnSubmit="@HandleSubmit">
+        <DataAnnotationsValidator />
 
-    <div class="form-group">
-        <div class="row">
-            <div class="col-md-12">
-                <label for="first-name">First name:</label>
-                <InputText id="first-name" @bind-Value="eventRegistration.FirstName" class="form-control" />
-                <ValidationMessage For="@(() => eventRegistration.FirstName)" />
+        <div class="form-group">
+            <div class="row">
+                <div class="col-md-12">
+                    <label for="first-name">First name:</label>
+                    <InputText id="first-name" @bind-Value="eventRegistration.FirstName" class="form-control" />
+                    <ValidationMessage For="@(() => eventRegistration.FirstName)" />
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <label for="last-name">Last name:</label>
+                    <InputText id="last-name" @bind-Value="eventRegistration.LastName" class="form-control" />
+                    <ValidationMessage For="@(() => eventRegistration.LastName)" />
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <label for="date-of-birth">Date of Birth:</label>
+                    <input type="date" id="date-of-birth" name="date-of-birth" @bind-value="eventRegistration.DateOfBirth" class="form-control" />
+                    <ValidationMessage For="@(() => eventRegistration.DateOfBirth)" />
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <label for="company-name">Company name:</label>
+                    <AutoCompleteCompanyInput id="company-name" @bind-Value="eventRegistration.CompanyName"  class="form-control" />
+                    <ValidationMessage For="@(() => eventRegistration.CompanyName)" />
+                </div>
+            </div>
+
+            <div class="row justify-content-center">
+                <div class="col-md-4">
+                    <button type="submit" class="btn btn-primary btn-block" disabled="@(!IsEventValid())">Submit</button>
+                </div>
             </div>
         </div>
-
-        <div class="row">
-            <div class="col-md-12">
-                <label for="last-name">Last name:</label>
-                <InputText id="last-name" @bind-Value="eventRegistration.LastName" class="form-control" />
-                <ValidationMessage For="@(() => eventRegistration.LastName)" />
-            </div>
-        </div>
-
-        <div class="row">
-            <div class="col-md-12">
-                <label for="date-of-birth">Date of Birth:</label>
-                <input type="date" id="date-of-birth" name="date-of-birth" @bind-value="eventRegistration.DateOfBirth" class="form-control" />
-                <ValidationMessage For="@(() => eventRegistration.DateOfBirth)" />
-            </div>
-        </div>
-
-        <div class="row">
-            <div class="col-md-12">
-                <label for="company-name">Company name:</label>
-                <AutoCompleteCompanyInput id="company-name" @bind-Value="eventRegistration.CompanyName"  class="form-control" />
-                                          @*   <InputText id="company-name" @bind-Value="eventRegistration.CompanyName" class="form-control" />*@
-                <ValidationMessage For="@(() => eventRegistration.CompanyName)" />
-            </div>
-        </div>
-
-        <div class="row justify-content-center">
-            <div class="col-md-4">
-                <button type="submit" class="btn btn-primary btn-block" disabled="@(!IsEventValid())">Submit</button>
-            </div>
-        </div>
-    </div>
-</EditForm>
-
+    </EditForm>
+}
+else
+{
+    <h2>Sorry registration is now closed</h2>
+}
 
 @if (!string.IsNullOrWhiteSpace(status) && validationErrors == null)
 {
@@ -80,6 +86,14 @@ else if (validationErrors != null)
     private string status;
     private BadRequestDto validationErrors;
 
+    bool available = true;
+    private int submitLimit;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        available = await RegistrationService.RegistrationsAvailable();
+    }
+
     private async Task HandleSubmit()
     {
         Logger.LogInformation("User Submits attendance");
@@ -88,19 +102,27 @@ else if (validationErrors != null)
 
         if (response.IsSuccessStatusCode)
         {
-            status = "Success";
+            status = "Successfully completed submission";
             validationErrors = null;
         }
         else
         {
-            status = $"Failed: {response.StatusCode}";
             var content = await response.Content.ReadAsStringAsync();
-            validationErrors = JsonSerializer.Deserialize<BadRequestDto>(content, new JsonSerializerOptions() { PropertyNameCaseInsensitive = true });
+
+            if (response.StatusCode == HttpStatusCode.BadRequest) 
+            {
+                status = $"Failed: {response.StatusCode}";
+                validationErrors = JsonSerializer.Deserialize<BadRequestDto>(content, new JsonSerializerOptions() { PropertyNameCaseInsensitive = true });
+            }
+            else
+            {
+                status = $"Failed: {content}";
+            }
         }
     }
 
     private bool IsEventValid()
     {
-        return Validator.TryValidateObject(eventRegistration, new ValidationContext(eventRegistration), null, true);
+        return Validator.TryValidateObject(eventRegistration, new ValidationContext(eventRegistration), null, true) && available;
     }
 }

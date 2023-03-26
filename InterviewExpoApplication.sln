@@ -9,7 +9,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "InterviewExpoApplication.Cl
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "InterviewExpoApplication.Shared", "InterviewExpoApplication\Shared\InterviewExpoApplication.Shared.csproj", "{4C80EFA5-68F9-4D4F-93E8-9E490354598F}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "InterviewExpoApplication.Data", "InterviewExpoApplication.Data\InterviewExpoApplication.Data.csproj", "{5091EB84-5133-4F4F-BBD4-684243DC92B9}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Data", "Data", "{E6176F26-C7E2-4E58-9861-0424E29185E6}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "InterviewExpoApplication.Data", "InterviewExpoApplication\Data\InterviewExpoApplication.Data\InterviewExpoApplication.Data.csproj", "{FF2436E8-FBF3-4C71-95A7-6EDBAA6114D9}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "InterviewExpoApplication.Data.Sqlite", "InterviewExpoApplication\Data\InterviewExpoApplication.Data.Sqlite\InterviewExpoApplication.Data.Sqlite.csproj", "{BC101304-D2CB-4495-BB08-4F6729264742}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "InterviewExpoApplication.Data.SqlServer", "InterviewExpoApplication\Data\InterviewExpoApplication.Data.SqlServer\InterviewExpoApplication.Data.SqlServer.csproj", "{7C301FE3-F42C-489C-98E5-E4E7069FC330}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -29,13 +35,26 @@ Global
 		{4C80EFA5-68F9-4D4F-93E8-9E490354598F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4C80EFA5-68F9-4D4F-93E8-9E490354598F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4C80EFA5-68F9-4D4F-93E8-9E490354598F}.Release|Any CPU.Build.0 = Release|Any CPU
-		{5091EB84-5133-4F4F-BBD4-684243DC92B9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{5091EB84-5133-4F4F-BBD4-684243DC92B9}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{5091EB84-5133-4F4F-BBD4-684243DC92B9}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{5091EB84-5133-4F4F-BBD4-684243DC92B9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FF2436E8-FBF3-4C71-95A7-6EDBAA6114D9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FF2436E8-FBF3-4C71-95A7-6EDBAA6114D9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FF2436E8-FBF3-4C71-95A7-6EDBAA6114D9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FF2436E8-FBF3-4C71-95A7-6EDBAA6114D9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BC101304-D2CB-4495-BB08-4F6729264742}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BC101304-D2CB-4495-BB08-4F6729264742}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BC101304-D2CB-4495-BB08-4F6729264742}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BC101304-D2CB-4495-BB08-4F6729264742}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7C301FE3-F42C-489C-98E5-E4E7069FC330}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7C301FE3-F42C-489C-98E5-E4E7069FC330}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7C301FE3-F42C-489C-98E5-E4E7069FC330}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7C301FE3-F42C-489C-98E5-E4E7069FC330}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{FF2436E8-FBF3-4C71-95A7-6EDBAA6114D9} = {E6176F26-C7E2-4E58-9861-0424E29185E6}
+		{BC101304-D2CB-4495-BB08-4F6729264742} = {E6176F26-C7E2-4E58-9861-0424E29185E6}
+		{7C301FE3-F42C-489C-98E5-E4E7069FC330} = {E6176F26-C7E2-4E58-9861-0424E29185E6}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {37D31D2B-684C-4788-9C5C-737154788AB8}

@@ -1,0 +1,57 @@
+﻿@page "/summary"
+
+@inject RegistrationService RegistrationService
+
+<PageTitle>Registration Summary</PageTitle>
+
+<h1>Registration Summary</h1>
+
+@if(eventRegistrationsSummary == null)
+{
+    <h3>loading...</h3>    
+}
+else
+{
+    <ul>
+        @foreach (var company in eventRegistrationsSummary.Companies)
+        {        
+            <li>
+                Name: @company.CompanyName <br/>
+                Domain: @(string.IsNullOrWhiteSpace(company.Domain) ? "Not available" : company.Domain) <br />
+                Registrants:
+                @if (company.Users?.Count > 0)
+                {
+                    <ul>
+                        @foreach (var user in company.Users)
+                        {
+                            <li><p>@user.ToString()</p></li>
+                        }
+                    </ul>
+                }
+                else
+                {
+                    <p>None</p>
+                }
+            </li>
+        }
+    </ul>
+    <strong>Total Companies: @eventRegistrationsSummary.Companies.Count</strong>
+    <strong>Total Registrants: @eventRegistrationsSummary.TotalRegistrants</strong>
+
+    <button class="btn btn-primary" @onclick="ClearRegistrations">Clear Registrations</button>
+}
+@code {
+    private EventRegistrationsResult eventRegistrationsSummary;
+
+    protected override async Task OnInitializedAsync()
+    {
+        eventRegistrationsSummary = await RegistrationService.GetSummary();
+    }
+
+    private async Task ClearRegistrations()
+    {
+        await RegistrationService.ClearRegistrations();
+        eventRegistrationsSummary = await RegistrationService.GetSummary();
+        StateHasChanged();
+    }
+}
